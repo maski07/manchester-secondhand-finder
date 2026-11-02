@@ -1,0 +1,1749 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manchester Second-Hand Finder</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@500;700;800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --bg: #eef2f4;
+    --surface: #ffffff;
+    --surface-alt: #f4f8f9;
+    --text: #1b232b;
+    --text-muted: #5b6a76;
+    --accent: #2c6e8e;
+    --accent-ink: #ffffff;
+    --accent-new: #c97a2b;
+    --accent-new-bg: #f7e6d3;
+    --border: #d7dee2;
+    --good: #3f7d53;
+    --fav: #b8860b;
+    --visited: #6b4c9a;
+    --shadow: 0 1px 2px rgba(20, 30, 36, 0.06), 0 8px 24px -12px rgba(20, 30, 36, 0.18);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12171b;
+      --surface: #1b2227;
+      --surface-alt: #212a30;
+      --text: #e7edf0;
+      --text-muted: #8fa0ab;
+      --accent: #74b8d6;
+      --accent-ink: #0e1417;
+      --accent-new: #e0a458;
+      --accent-new-bg: #3a2c1a;
+      --border: #2a343b;
+      --good: #7cc492;
+      --fav: #e3c05c;
+      --visited: #b89ae0;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12171b;
+    --surface: #1b2227;
+    --surface-alt: #212a30;
+    --text: #e7edf0;
+    --text-muted: #8fa0ab;
+    --accent: #74b8d6;
+    --accent-ink: #0e1417;
+    --accent-new: #e0a458;
+    --accent-new-bg: #3a2c1a;
+    --border: #2a343b;
+    --good: #7cc492;
+    --fav: #e3c05c;
+    --visited: #b89ae0;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 2.25rem 1.5rem 4rem;
+  }
+
+  header.page {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  h1 {
+    font-family: "Libre Franklin", "Segoe UI", sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.7rem, 3vw, 2.3rem);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0 0 0.3rem;
+  }
+  .sub {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  .sub b { color: var(--text); font-variant-numeric: tabular-nums; }
+
+  .stats {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.55rem 0.9rem;
+    box-shadow: var(--shadow);
+    min-width: 92px;
+  }
+  .stat .n {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 600;
+    font-size: 1.15rem;
+    font-variant-numeric: tabular-nums;
+    display: block;
+  }
+  .stat .l {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .search {
+    flex: 1 1 240px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+  }
+  .search svg { flex: none; color: var(--text-muted); }
+  .search input {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    width: 100%;
+  }
+  .search input::placeholder { color: var(--text-muted); }
+
+  select, .toggle {
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+  }
+  select:focus, .toggle:focus-visible, input:focus-visible, th button:focus-visible, a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .toggle input { accent-color: var(--accent); width: 15px; height: 15px; }
+
+  .table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .table-scroll { overflow-x: auto; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 760px;
+  }
+  thead th {
+    position: sticky;
+    top: 0;
+    background: var(--surface-alt);
+    text-align: left;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+    white-space: nowrap;
+    z-index: 1;
+  }
+  thead th button {
+    all: unset;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.65rem 0.9rem;
+    cursor: pointer;
+    width: 100%;
+  }
+  thead th:not([data-key]) { padding: 0.65rem 0.9rem; }
+  thead th button:hover { color: var(--text); }
+  thead th .arrow { opacity: 0; font-size: 0.65rem; }
+  thead th.sorted .arrow { opacity: 1; color: var(--accent); }
+
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-alt); }
+  tbody tr.is-new { box-shadow: inset 3px 0 0 var(--accent-new); }
+  td {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.88rem;
+    vertical-align: top;
+  }
+  td.num { font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.price { font-weight: 600; }
+  .addr { font-weight: 500; min-width: 170px; }
+  .addr a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  .addr a:hover { text-decoration-thickness: 2px; }
+  .addr a:visited, .addr a.is-visited { color: var(--visited); }
+  .notes { color: var(--text-muted); font-size: 0.82rem; max-width: 320px; }
+
+  tbody tr.is-removed { opacity: 0.4; }
+  tbody tr.is-removed:hover { opacity: 0.7; }
+
+  .remove-btn {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .remove-btn:hover { background: var(--accent-new-bg); color: var(--accent-new); }
+  .remove-btn.is-restore { color: var(--accent); font-size: 0.72rem; width: auto; padding: 0 0.5rem; font-weight: 600; }
+  .remove-btn.is-restore:hover { background: var(--surface-alt); }
+
+  .fav-col { width: 2.2rem; }
+  .fav-btn {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--border);
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+  .fav-btn:hover { color: var(--fav); background: var(--surface-alt); }
+  .fav-btn.is-fav { color: var(--fav); }
+  .fav-btn[disabled] { cursor: default; opacity: 0.5; }
+
+  .note-input {
+    display: block;
+    width: 100%;
+    min-width: 160px;
+    min-height: 2.4rem;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    color: var(--text);
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.35rem 0.5rem;
+  }
+  .note-input::placeholder { color: var(--text-muted); }
+  .enq-cell { display: flex; align-items: center; gap: 0.2rem; white-space: nowrap; }
+  .enq-btn { all: unset; cursor: pointer; font-size: 0.78rem; font-weight: 600; color: var(--accent); border: 1px dashed var(--border); border-radius: 6px; padding: 0.25rem 0.5rem; white-space: nowrap; }
+  .enq-btn:hover { background: var(--surface-alt); border-color: var(--accent); }
+  .enq-input { font-family: inherit; font-size: 0.8rem; color: var(--text); background: var(--surface-alt); border: 1px solid var(--border); border-radius: 6px; padding: 0.2rem 0.35rem; }
+  .enq-clear { all: unset; cursor: pointer; color: var(--text-muted); font-size: 0.75rem; padding: 0 0.25rem; }
+  .enq-clear:hover { color: var(--accent-new); }
+  .st-chip { display: inline-block; font-size: 0.74rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 999px; border: 1px solid currentColor; background: var(--surface-alt); white-space: nowrap; text-decoration: none; }
+  a.st-chip:hover { text-decoration: underline; }
+  .st-chip.tone-attention { color: var(--accent-new); background: var(--accent-new-bg); }
+  .st-chip.tone-good { color: var(--good); }
+  .st-chip.tone-info { color: var(--accent); }
+  .st-chip.tone-progress { color: var(--visited); }
+  .st-chip.tone-closed { color: var(--text-muted); text-decoration: line-through; }
+  .criteria { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); padding: 0.75rem 1.1rem; margin-bottom: 1.25rem; }
+  .criteria summary { cursor: pointer; font-family: "Libre Franklin", "Segoe UI", sans-serif; font-weight: 700; font-size: 1rem; }
+  .criteria-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.6rem 1.5rem; margin: 0.8rem 0 0.2rem; }
+  .criteria-item h3 { margin: 0 0 0.2rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+  .criteria-item p { margin: 0; font-size: 0.88rem; line-height: 1.45; }
+  .st-cell { min-width: 220px; max-width: 280px; }
+  .st-note { display: block; font-size: 0.8rem; line-height: 1.4; color: var(--text); margin-top: 0.3rem; }
+  .st-mail { display: inline-block; margin-top: 0.3rem; font-size: 0.78rem; font-weight: 600; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
+  .st-date { display: inline-block; margin-left: 0.35rem; font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; white-space: nowrap; }
+  .note-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .nowrap { white-space: nowrap; }
+
+  .btn-group { flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+  .btn-group-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); min-width: 5.5rem; }
+  .filter-btn { font-family: inherit; font-size: 0.9rem; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 0.4rem 0.85rem; cursor: pointer; }
+  .filter-btn:hover { border-color: var(--accent); }
+  .filter-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .filter-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .filter-btn .count { opacity: 0.7; font-size: 0.8rem; margin-left: 0.2rem; }
+  .links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.9rem; margin-bottom: 1rem; font-size: 0.88rem; color: var(--text-muted); }
+  .links a { color: var(--accent); text-underline-offset: 2px; }
+  td.wide { min-width: 260px; font-size: 0.84rem; }
+
+  .chip {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+  }
+  .chip.new { background: var(--accent-new-bg); color: var(--accent-new); }
+  .chip.src {
+    background: var(--surface-alt);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    font-weight: 600;
+  }
+
+  .empty {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--text-muted);
+  }
+
+  .banner {
+    position: fixed;
+    bottom: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--text);
+    color: var(--bg);
+    font-size: 0.85rem;
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 10;
+    max-width: 90vw;
+    text-align: center;
+  }
+  .banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  footer {
+    margin-top: 1.25rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    tbody tr, .stat { transition: background 0.15s ease; }
+  }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 1.5rem 1rem 3rem; }
+    .stats { width: 100%; }
+    .stat { flex: 1 1 40%; }
+  }
+</style>
+</head>
+<body>
+<script>
+// ============================================================================
+// EDIT THIS BLOCK FOR EACH SEARCH. See README.md for every option.
+// Second-hand TV, vacuum and microwave search in Manchester.
+// ============================================================================
+var CONFIG = {
+ "id": "manchester-secondhand",
+ "title": "Manchester Second-Hand Finder",
+ "subtitle": "Used TVs up to £100, vacuum cleaners up to £50 and microwaves up to £50, collectable in Greater Manchester",
+ "footer": "Checked once on 2 November 2026, so items may have sold since. Conditions are the sellers' own claims. Distances are rough estimates from the city centre. For safety, meet in person, test the item before paying, and be wary of requests to pay in advance.",
+ "empty": "No items match those filters.",
+ "linkKey": "name",
+ "criteriaTitle": "How these were found and ranked",
+ "criteria": [
+  {
+   "heading": "Checked",
+   "text": "Gumtree and Preloved: every in-budget listing found was read individually. Shpock showed no Manchester listings."
+  },
+  {
+   "heading": "Not checked",
+   "text": "Facebook Marketplace needs a login, and eBay, CeX and Vinted blocked automated access. Cash Converters did not load. Use the links above the filters to search them yourself."
+  },
+  {
+   "heading": "Budget",
+   "text": "TV up to £100; vacuum up to £50; microwave up to £50"
+  },
+  {
+   "heading": "Excluded",
+   "text": "Brand-new items, spares or non-working items, accessories and parts, carpet washers, retro CRT sets, signage displays and anything outside Greater Manchester"
+  },
+  {
+   "heading": "Rank",
+   "text": "Ranked within each item type: working condition first, then value for money, completeness, distance and how fresh the ad is. Faulty items rank lowest. This is my judgement from the ad text, not a test of the item."
+  }
+ ],
+ "linksTitle": "Search yourself:",
+ "links": [
+  {
+   "label": "Facebook Marketplace",
+   "url": "https://www.facebook.com/marketplace/manchester/"
+  },
+  {
+   "label": "eBay: TV",
+   "url": "https://www.ebay.co.uk/sch/i.html?_nkw=tv&LH_ItemCondition=3000&_udhi=100&_stpos=M1&_sadis=15&LH_LocalPickup=1"
+  },
+  {
+   "label": "eBay: vacuum",
+   "url": "https://www.ebay.co.uk/sch/i.html?_nkw=vacuum+cleaner&LH_ItemCondition=3000&_udhi=50&_stpos=M1&_sadis=15&LH_LocalPickup=1"
+  },
+  {
+   "label": "eBay: microwave",
+   "url": "https://www.ebay.co.uk/sch/i.html?_nkw=microwave&LH_ItemCondition=3000&_udhi=50&_stpos=M1&_sadis=15&LH_LocalPickup=1"
+  },
+  {
+   "label": "Cash Converters",
+   "url": "https://www.cashconverters.co.uk/"
+  },
+  {
+   "label": "CeX",
+   "url": "https://uk.webuy.com/"
+  },
+  {
+   "label": "BHF Harpurhey (furniture & electrical)",
+   "url": "https://www.bhf.org.uk/what-we-do/find-bhf-near-you/harpurhey-furniture-electrical-store"
+  }
+ ],
+ "columns": [
+  {
+   "key": "rank",
+   "label": "Rank",
+   "type": "number"
+  },
+  {
+   "key": "price",
+   "label": "Price",
+   "type": "money",
+   "prefix": "£",
+   "zeroLabel": "Free"
+  },
+  {
+   "key": "name",
+   "label": "Item",
+   "type": "link"
+  },
+  {
+   "key": "category",
+   "label": "Type",
+   "type": "text"
+  },
+  {
+   "key": "condition",
+   "label": "Condition",
+   "type": "text",
+   "tooltip": "As claimed by the seller"
+  },
+  {
+   "key": "why",
+   "label": "Why this rank",
+   "type": "text",
+   "wide": true,
+   "sortable": false
+  },
+  {
+   "key": "area",
+   "label": "Area",
+   "type": "text"
+  },
+  {
+   "key": "miles",
+   "label": "Miles",
+   "type": "number",
+   "prefix": "~",
+   "tooltip": "Rough estimate from Manchester city centre"
+  },
+  {
+   "key": "days",
+   "label": "Posted",
+   "type": "number",
+   "unit": " d ago"
+  },
+  {
+   "key": "source",
+   "label": "Site",
+   "type": "text"
+  },
+  {
+   "key": "contacted",
+   "label": "Contacted",
+   "type": "tracked"
+  },
+  {
+   "key": "note",
+   "label": "My note",
+   "type": "note"
+  }
+ ],
+ "search": {
+  "placeholder": "Search by item or area…",
+  "keys": [
+   "name",
+   "area"
+  ]
+ },
+ "filters": [
+  {
+   "key": "category",
+   "label": "All",
+   "heading": "Item",
+   "style": "buttons",
+   "options": [
+    "TV",
+    "Vacuum",
+    "Microwave"
+   ]
+  },
+  {
+   "key": "zone",
+   "label": "Any",
+   "heading": "Distance",
+   "style": "buttons",
+   "options": [
+    "Under 5 mi",
+    "5–10 mi",
+    "Over 10 mi",
+    "Area not stated"
+   ]
+  },
+  {
+   "key": "source",
+   "label": "All",
+   "heading": "Site",
+   "style": "buttons",
+   "options": [
+    "Gumtree",
+    "Preloved"
+   ]
+  }
+ ],
+ "toggles": [
+  {
+   "type": "hideSeen",
+   "label": "Hide seen"
+  },
+  {
+   "type": "showRemoved",
+   "label": "Show removed"
+  },
+  {
+   "type": "favorites",
+   "label": "Favorites only"
+  },
+  {
+   "type": "tracked",
+   "label": "Contacted only"
+  }
+ ],
+ "stats": [
+  {
+   "value": "total",
+   "label": "Listed"
+  },
+  {
+   "value": "unseen",
+   "label": "Unseen"
+  },
+  {
+   "value": "favorites",
+   "label": "Favorites"
+  }
+ ],
+ "statuses": {},
+ "defaultSort": {
+  "key": "rank",
+  "dir": 1
+ }
+};
+
+var DATA = [
+{
+"name": "JVC 32\" LED Smart TV",
+"price": 20.0,
+"days": 10,
+"source": "Preloved",
+"link": "https://www.preloved.co.uk/adverts/show/122922425/jvc32-inch-screenled-smart-tv",
+"rank": 1,
+"category": "TV",
+"area": "Manchester (exact area not stated)",
+"miles": null,
+"zone": "Area not stated",
+"condition": "Very good",
+"why": "Smart, scratch-free screen, remote included, and far below budget. Price is open to offers."
+},
+{
+"name": "Pink Henry Numatic Vacuum Cleaner - Good Working Order",
+"price": 40,
+"days": 2,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/vacuum-cleaners/pink-henry-numatic-vacuum-cleaner-good-working-order/1804443348",
+"rank": 1,
+"category": "Vacuum",
+"area": "Northern Moor",
+"miles": 5.5,
+"zone": "5–10 mi",
+"condition": "Good",
+"why": "Reliable corded Henry, said to be 6 months old with an Argos price of £140. Best value if that checks out."
+},
+{
+"name": "Panasonic Microwave Oven NN-E28JBM – Black, Good Condition",
+"price": 32,
+"days": 17,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/microwave-ovens/panasonic-microwave-oven-nn-e28jbm-black-good-condition/1800422178",
+"rank": 1,
+"category": "Microwave",
+"area": "Whitefield",
+"miles": 6,
+"zone": "5–10 mi",
+"condition": "Good",
+"why": "Reliable brand, clean, with auto-cook and defrost, all buttons working, and turntable and ring included."
+},
+{
+"name": "Samsung 40” Full HD Smart TV",
+"price": 50,
+"days": 1,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/televisions-plasma-lcd-tvs/samsung-40-full-hd-smart-tv/1804488583",
+"rank": 2,
+"category": "TV",
+"area": "High Lane, Stockport",
+"miles": 11,
+"zone": "Over 10 mi",
+"condition": "Great",
+"why": "Largest fully working smart set at this price, with stand and remote. Older apps may not update, so a streaming stick may help."
+},
+{
+"name": "Dyson V6 Cord-Free Vacuum Cleaner with Accessories",
+"price": 50,
+"days": 3,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/vacuum-cleaners/dyson-v6-cord-free-vacuum-cleaner-with-accessories/1804426072",
+"rank": 2,
+"category": "Vacuum",
+"area": "Stretford",
+"miles": 3,
+"zone": "Under 5 mi",
+"condition": "Good",
+"why": "Cordless with animal brush, charger and tools. At the top of budget; ask about battery life."
+},
+{
+"name": "Kenwood Microwave Oven - Silver, Good Condition",
+"price": 30,
+"days": 2,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/microwave-ovens/kenwood-microwave-oven-silver-good-condition/1804461109",
+"rank": 2,
+"category": "Microwave",
+"area": "Bredbury or Heald Green",
+"miles": 6.5,
+"zone": "5–10 mi",
+"condition": "Good",
+"why": "Digital controls, well kept, and the newest microwave ad here."
+},
+{
+"name": "Toshiba 32 inch smart hdr led tv bargain £40 no offers free local delivery",
+"price": 40,
+"days": 2,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/televisions-plasma-lcd-tvs/toshiba-32-inch-smart-hdr-led-tv-bargain-£40-no-offers-free-local-delivery-/1804450037",
+"rank": 3,
+"category": "TV",
+"area": "Timperley",
+"miles": 8,
+"zone": "5–10 mi",
+"condition": "Working",
+"why": "32\" smart with Wi-Fi, apps, stand and remote. Seller offers free local delivery; cash only."
+},
+{
+"name": "Dyson Ball Vacuum Cleaner – Good Condition",
+"price": 25,
+"days": 22,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/vacuum-cleaners/dyson-ball-vacuum-cleaner-good-condition/1803757481",
+"rank": 3,
+"category": "Vacuum",
+"area": "Stretford",
+"miles": 3,
+"zone": "Under 5 mi",
+"condition": "Good",
+"why": "Corded Dyson Ball at half budget, working with minor scuffs. Posted 22 days ago, so check it's still there."
+},
+{
+"name": "Daewoo Microwave",
+"price": 0,
+"days": 19,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/microwave-ovens/daewoo-microwave/1803852977",
+"rank": 3,
+"category": "Microwave",
+"area": "Rochdale",
+"miles": 10,
+"zone": "5–10 mi",
+"condition": "Excellent, per seller",
+"why": "Free, with a new plate and manual. Posted 19 days ago, so it may be gone."
+},
+{
+"name": "Television HD  LG39LN575V 39 inch, black",
+"price": 50,
+"days": 1,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/televisions-plasma-lcd-tvs/television-hd-lg39ln575v-39-inch-black/1804488162",
+"rank": 4,
+"category": "TV",
+"area": "Cheadle Hulme",
+"miles": 8,
+"zone": "5–10 mi",
+"condition": "Good",
+"why": "39\" with original remote and several HDMI ports. Not described as smart."
+},
+{
+"name": "Vacuum Dyson with attachments – root cyclone technology",
+"price": 25,
+"days": 5,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/vacuum-cleaners/vacuum-dyson-with-attachments-root-cyclone-technology/1804346266",
+"rank": 4,
+"category": "Vacuum",
+"area": "Oldham",
+"miles": 7,
+"zone": "5–10 mi",
+"condition": "Good, minor fault",
+"why": "Corded with attachments and filters cleaned. Wand clip is missing and held with tape."
+},
+{
+"name": "Igenix IG2071 Microwave Oven – White, Good Condition",
+"price": 25,
+"days": 18,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/microwave-ovens/igenix-ig2071-microwave-oven-white-good-condition/1803896018",
+"rank": 4,
+"category": "Microwave",
+"area": "Manchester (exact area not stated)",
+"miles": null,
+"zone": "Area not stated",
+"condition": "Good",
+"why": "Compact and clean, with turntable and ring. Minor cosmetic marks."
+},
+{
+"name": "Toshiba Regza 37\" LCD TV",
+"price": 25.0,
+"days": 4,
+"source": "Preloved",
+"link": "https://www.preloved.co.uk/adverts/show/121923856/toshiba-regza-37-lcd-tv-excellent-condition",
+"rank": 5,
+"category": "TV",
+"area": "Rochdale",
+"miles": 10,
+"zone": "5–10 mi",
+"condition": "Excellent",
+"why": "Owned from new with a perfect screen and very cheap. Older LCD, not smart. No offers."
+},
+{
+"name": "Dyson Vacuum Cleaner – Used, Good Working Condition",
+"price": 50,
+"days": 7,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/vacuum-cleaners/dyson-vacuum-cleaner-used-good-working-condition/1804279223",
+"rank": 5,
+"category": "Vacuum",
+"area": "Stockport",
+"miles": 6,
+"zone": "5–10 mi",
+"condition": "Good",
+"why": "Works well, but model isn't stated and it's at the top of budget. Ask which model."
+},
+{
+"name": "Cookworks White Microwave Oven – Good Condition",
+"price": 25,
+"days": 20,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/microwave-ovens/cookworks-white-microwave-oven-good-condition/1803801131",
+"rank": 5,
+"category": "Microwave",
+"area": "City Centre",
+"miles": 0.5,
+"zone": "Under 5 mi",
+"condition": "Good",
+"why": "Closest to the centre, compact, with turntable and ring. The ad also says 'giving away', so ask."
+},
+{
+"name": "Samsung Smart 40inch TV",
+"price": 90,
+"days": 2,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/televisions-plasma-lcd-tvs/samsung-smart-40inch-tv-/1804452394",
+"rank": 6,
+"category": "TV",
+"area": "Longsight",
+"miles": 2.5,
+"zone": "Under 5 mi",
+"condition": "Good",
+"why": "40\" smart and close to the centre. Apps are slow and there's no Netflix, so plan on a Fire Stick."
+},
+{
+"name": "Dyson DC01 vacuum cleaner",
+"price": 20,
+"days": 1,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/vacuum-cleaners/dyson-dc01-vacuum-cleaner-/1508484155",
+"rank": 6,
+"category": "Vacuum",
+"area": "Chorlton",
+"miles": 4,
+"zone": "Under 5 mi",
+"condition": "Very good for age",
+"why": "Cheap and can be tested at collection, but a very old model."
+},
+{
+"name": "Black and Copper Microwave Oven - Good Condition",
+"price": 15,
+"days": 22,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/microwave-ovens/black-and-copper-microwave-oven-good-condition/1803744208",
+"rank": 6,
+"category": "Microwave",
+"area": "Radcliffe",
+"miles": 7.5,
+"zone": "5–10 mi",
+"condition": "Good",
+"why": "Well kept and cheap. Model isn't stated."
+},
+{
+"name": "Samsung 32 inch Smart TV in white, LTD Model",
+"price": 80,
+"days": 0,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/smart-tv/samsung-32-inch-smart-tv-in-white-ltd-model/1804506651",
+"rank": 7,
+"category": "TV",
+"area": "Gorton",
+"miles": 3.5,
+"zone": "Under 5 mi",
+"condition": "As new",
+"why": "32\" smart, described as like new. Delivery and install offered. Pricey for its size."
+},
+{
+"name": "Dyson DC04 Vacuum Cleaner – Grey and Yellow, Good Condition",
+"price": 15,
+"days": 22,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/vacuum-cleaners/dyson-dc04-vacuum-cleaner-grey-and-yellow-good-condition/1803748435",
+"rank": 7,
+"category": "Vacuum",
+"area": "Bolton",
+"miles": 10.5,
+"zone": "Over 10 mi",
+"condition": "Working, worn",
+"why": "Cheapest working option, but an old model and a long trip."
+},
+{
+"name": "Kenwood Microwave Oven – Black, Good Condition",
+"price": 40,
+"days": 35,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/microwave-ovens/kenwood-microwave-oven-black-good-condition/1515319486",
+"rank": 7,
+"category": "Microwave",
+"area": "Northern Moor",
+"miles": 5.5,
+"zone": "5–10 mi",
+"condition": "Good",
+"why": "Hardly used with presets, but more expensive than similar ones."
+},
+{
+"name": "Pioneer KURO PDP-LX5090 50\" Plasma TV – 9th Generation – Excellent Condition",
+"price": 75,
+"days": 1,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/televisions-plasma-lcd-tvs/pioneer-kuro-pdp-lx5090-50-plasma-tv-9th-generation-excellent-condition/1804468225",
+"rank": 8,
+"category": "TV",
+"area": "Whalley Range",
+"miles": 2.5,
+"zone": "Under 5 mi",
+"condition": "Excellent",
+"why": "Superb picture for the money, but a plasma is heavy and uses more power."
+},
+{
+"name": "Dyson V8 cordless vacuum cleaner",
+"price": 30,
+"days": 14,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/vacuum-cleaners/dyson-v8-cordless-vacuum-cleaner-/1804020967",
+"rank": 8,
+"category": "Vacuum",
+"area": "Wythenshawe",
+"miles": 6.5,
+"zone": "5–10 mi",
+"condition": "Has a fault",
+"why": "Works on normal but cuts out on max. Battery may be worn. Cash on collection."
+},
+{
+"name": "Samsung Microwave Oven",
+"price": 50,
+"days": 26,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/microwave-ovens/samsung-microwave-oven-/1501958399",
+"rank": 8,
+"category": "Microwave",
+"area": "Rochdale",
+"miles": 10,
+"zone": "5–10 mi",
+"condition": "Not stated",
+"why": "Solid 23L Samsung, but at the top of budget and the ad gives no condition."
+},
+{
+"name": "Panasonic Viera TX-L42E6BW 42\" 1080p HD LCD White COLLECTION ONLY   NO OFFERS",
+"price": 50,
+"days": 0,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/televisions-plasma-lcd-tvs/panasonic-viera-tx-l42e6bw-42-1080p-hd-lcd-white-collection-only-no-offers/1804521231",
+"rank": 9,
+"category": "TV",
+"area": "Bramhall",
+"miles": 9,
+"zone": "5–10 mi",
+"condition": "Not stated",
+"why": "42\" Full HD with Freeview HD. Collection only, no offers. Ask about condition."
+},
+{
+"name": "Dyson hoover",
+"price": 50,
+"days": 2,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/vacuum-cleaners/dyson-hoover-/1508727392",
+"rank": 9,
+"category": "Vacuum",
+"area": "Hazel Grove",
+"miles": 8,
+"zone": "5–10 mi",
+"condition": "Has a fault",
+"why": "Extension pipe has no suction and needs replacing, which adds to the £50 price."
+},
+{
+"name": "Silver Microwave Oven – Good Condition £10",
+"price": 10,
+"days": 14,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/microwave-ovens/silver-microwave-oven-good-condition-£10/1804037525",
+"rank": 9,
+"category": "Microwave",
+"area": "Chadderton",
+"miles": 6,
+"zone": "5–10 mi",
+"condition": "Good, part missing",
+"why": "Cheapest paid option, but the ring under the plate is missing, so get a replacement."
+},
+{
+"name": "Panasonic TX-L37S10B 37\" LCD TV",
+"price": 50.0,
+"days": 10,
+"source": "Preloved",
+"link": "https://www.preloved.co.uk/adverts/show/123143523/panasonic-tx-l37s10b-37-inch-lcd-tv",
+"rank": 10,
+"category": "TV",
+"area": "Royton",
+"miles": 8,
+"zone": "5–10 mi",
+"condition": "Full working order",
+"why": "Works, with remote. Not smart. Price is open to offers."
+},
+{
+"name": "Dyson vacuum hoover",
+"price": 20,
+"days": 3,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/vacuum-cleaners/dyson-vacuum-hoover/1514486918",
+"rank": 10,
+"category": "Vacuum",
+"area": "Bolton (BL3)",
+"miles": 10.5,
+"zone": "Over 10 mi",
+"condition": "Has a fault",
+"why": "Roller sticks and suction is weak. Only for repairing or parts."
+},
+{
+"name": "Fast Delivery!! Russell Hobbs 17l 700w Microwave",
+"price": 45,
+"days": 12,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/microwave-ovens/fast-delivery-russell-hobbs-17l-700w-microwave-/1804108164",
+"rank": 10,
+"category": "Microwave",
+"area": "Atherton",
+"miles": 11,
+"zone": "Over 10 mi",
+"condition": "Check with seller",
+"why": "Trade seller with warranty and delivery. It sells used and new, so ask which this one is."
+},
+{
+"name": "Lg50 inch tv",
+"price": 50,
+"days": 2,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/televisions-plasma-lcd-tvs/lg50-inch-tv/1804459710",
+"rank": 11,
+"category": "TV",
+"area": "Ashton-under-Lyne",
+"miles": 6.5,
+"zone": "5–10 mi",
+"condition": "Good, per seller",
+"why": "Biggest screen here, but not smart and the ad is short. Ask for its model and age."
+},
+{
+"name": "Microwave",
+"price": 30,
+"days": 38,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/microwave-ovens/microwave-/1803163008",
+"rank": 11,
+"category": "Microwave",
+"area": "Littleborough",
+"miles": 13,
+"zone": "Over 10 mi",
+"condition": "Like new, per seller",
+"why": "One-line ad with no brand given, and the furthest away."
+},
+{
+"name": "Hitachi 32 inch LED  Smart tv with built in dvd  player , wifi , hdmi  , freeview , usb",
+"price": 70,
+"days": 1,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/smart-tv/hitachi-32-inch-led-smart-tv-with-built-in-dvd-player-wifi-hdmi-freeview-usb/1804484031",
+"rank": 12,
+"category": "TV",
+"area": "Edgeley",
+"miles": 6,
+"zone": "5–10 mi",
+"condition": "Working",
+"why": "Smart with built-in DVD, but no remote included, so budget for a universal one."
+},
+{
+"name": "Sharp microwave 800w",
+"price": 20,
+"days": 11,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/microwave-ovens/sharp-microwave-800w/1804144131",
+"rank": 12,
+"category": "Microwave",
+"area": "Stretford",
+"miles": 3.5,
+"zone": "Under 5 mi",
+"condition": "Rust on door frame",
+"why": "Cheap and close, but door-frame rust matters on a microwave. Inspect the door seal or skip it."
+},
+{
+"name": "32\" Toshiba for sale",
+"price": 30,
+"days": 2,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/televisions-plasma-lcd-tvs/32-toshiba-for-sale/1509347180",
+"rank": 13,
+"category": "TV",
+"area": "Walkden, Worsley",
+"miles": 6.5,
+"zone": "5–10 mi",
+"condition": "Pretty much new",
+"why": "Cheap, but the ad gives few details. Buyer must collect."
+},
+{
+"name": "Baumatic BMM 204 SS Microwave Integrated",
+"price": 45,
+"days": 17,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/microwave-ovens/baumatic-bmm-204-ss-microwave-integrated/1803935067",
+"rank": 13,
+"category": "Microwave",
+"area": "Marple",
+"miles": 9,
+"zone": "5–10 mi",
+"condition": "Used, working",
+"why": "Integrated model: needs a cabinet space, so it won't suit most worktops."
+},
+{
+"name": "Samsung Flat Screen TV with HDMI – Good Condition",
+"price": 20,
+"days": 2,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/televisions-plasma-lcd-tvs/samsung-flat-screen-tv-with-hdmi-good-condition/1804456122",
+"rank": 14,
+"category": "TV",
+"area": "Salford",
+"miles": 2,
+"zone": "Under 5 mi",
+"condition": "Good",
+"why": "Cheap with local delivery, but size and model aren't stated."
+},
+{
+"name": "Sony BRAVIA KDL-40V3000 LCD TV 40-inch with Glass Stand",
+"price": 50,
+"days": 0,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/televisions-plasma-lcd-tvs/sony-bravia-kdl-40v3000-lcd-tv-40-inch-with-glass-stand/1804520421",
+"rank": 15,
+"category": "TV",
+"area": "Middleton",
+"miles": 6,
+"zone": "5–10 mi",
+"condition": "Good",
+"why": "40\" with glass stand and remote, but made in 2007, so expect dated picture and power use."
+},
+{
+"name": "Samsung LE32A457C1D 32\" TV",
+"price": 90.0,
+"days": 11,
+"source": "Preloved",
+"link": "https://www.preloved.co.uk/adverts/show/122591324/samsung-tv-model-le32a457c1d",
+"rank": 16,
+"category": "TV",
+"area": "Manchester (exact area not stated)",
+"miles": null,
+"zone": "Area not stated",
+"condition": "Almost new",
+"why": "Remote included, but an older model and expensive for 32\"."
+},
+{
+"name": "Ferguson LCD TV",
+"price": 20,
+"days": 1,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/televisions-plasma-lcd-tvs/ferguson-lcd-tv/1472915282",
+"rank": 17,
+"category": "TV",
+"area": "Manchester (exact area not stated)",
+"miles": null,
+"zone": "Area not stated",
+"condition": "Good",
+"why": "Very small at 43 cm. Has DVD, SD and USB. Suits a kitchen or bedroom."
+},
+{
+"name": "EGL ETV32G 32\" HD Ready LED TV with Remote",
+"price": 20,
+"days": 2,
+"source": "Gumtree",
+"link": "https://www.gumtree.com/p/televisions-plasma-lcd-tvs/egl-etv32g-32-hd-ready-led-tv-with-remote/1804453020",
+"rank": 18,
+"category": "TV",
+"area": "Cheadle Hulme",
+"miles": 8,
+"zone": "5–10 mi",
+"condition": "Sold as seen",
+"why": "Only partly tested by the seller: picture and volume. HD Ready only."
+}
+];
+
+var RUN_DATE = "2 Nov 2026";
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  // The app below is driven entirely by CONFIG and DATA. Favorite, Remove,
+  // note and tracked-date state lives in the artifact's db when published,
+  // and in this browser's localStorage when the file is opened directly.
+  var ITEMS = DATA.filter(function (d) {
+    if (d.link) return true;
+    console.warn("Item skipped because it has no link:", d);
+    return false;
+  });
+  var STATUSES = CONFIG.statuses || {};
+  var COLUMNS = CONFIG.columns;
+  var SEARCH = CONFIG.search || { placeholder: "Filter…", keys: [] };
+  var FILTERS = CONFIG.filters || [];
+  var TOGGLES = CONFIG.toggles || [];
+  var STATS = CONFIG.stats || [];
+  var CRITERIA = CONFIG.criteria || [];
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function safeUrl(u) { return /^(https?:|mailto:)/i.test(String(u || "")) ? String(u) : ""; }
+  function isBlank(v) { return v === undefined || v === null || v === ""; }
+  function num(v) {
+    if (typeof v === "number") return Number.isFinite(v) ? v : null;
+    var n = parseFloat(String(v === undefined || v === null ? "" : v).replace(/[^0-9.\-]/g, ""));
+    return Number.isFinite(n) ? n : null;
+  }
+  function isNew(d) { return d.new === true || String(d.new).toUpperCase() === "TRUE"; }
+  function itemName(d) { return String(isBlank(d[CONFIG.linkKey]) ? d.link : d[CONFIG.linkKey]); }
+  function toggleId(t) { return t.type + (t.status ? ":" + t.status : ""); }
+
+  function buildBody() {
+    var stats = STATS.map(function (s, i) {
+      return '<div class="stat"><span class="n" id="stat-' + i + '">0</span><span class="l">' + escapeHtml(s.label) + '</span></div>';
+    }).join("");
+    var criteria = CRITERIA.length ? '<details class="criteria"><summary>' + escapeHtml(CONFIG.criteriaTitle || "Search criteria") + '</summary><div class="criteria-grid">'
+      + CRITERIA.map(function (c) {
+        return '<div class="criteria-item"><h3>' + escapeHtml(c.heading) + '</h3><p>' + escapeHtml(c.text) + '</p></div>';
+      }).join("") + '</div></details>' : "";
+    var filters = FILTERS.map(function (f, i) {
+      var seen = {};
+      ITEMS.forEach(function (d) { if (!isBlank(d[f.key])) seen[String(d[f.key])] = true; });
+      var options = f.options || Object.keys(seen).sort(function (a, b) { return a.localeCompare(b, undefined, { numeric: true }); });
+      if (f.style === "buttons") {
+        function button(value, text) {
+          var n = value ? ITEMS.filter(function (d) { return String(d[f.key]) === value; }).length : ITEMS.length;
+          return '<button type="button" class="filter-btn" data-value="' + escapeHtml(value) + '" aria-pressed="' + (value ? "false" : "true") + '">' + escapeHtml(text) + '<span class="count">' + n + '</span></button>';
+        }
+        return '<div class="btn-group" id="filter-' + i + '" role="group" aria-label="' + escapeHtml(f.heading || f.label) + '">'
+          + (f.heading ? '<span class="btn-group-label">' + escapeHtml(f.heading) + '</span>' : "")
+          + button("", f.label) + options.map(function (o) { return button(o, o); }).join("") + '</div>';
+      }
+      return '<select id="filter-' + i + '" aria-label="' + escapeHtml(f.label) + '"><option value="">' + escapeHtml(f.label) + '</option>'
+        + options.map(function (o) { return '<option value="' + escapeHtml(o) + '">' + escapeHtml(o) + '</option>'; }).join("") + '</select>';
+    }).join("");
+    var toggles = TOGGLES.map(function (t, i) {
+      return '<label class="toggle"><input id="toggle-' + i + '" type="checkbox"> ' + escapeHtml(t.label) + '</label>';
+    }).join("");
+    var heads = COLUMNS.map(function (c) {
+      var title = c.tooltip ? ' title="' + escapeHtml(c.tooltip) + '"' : "";
+      if (c.type === "note") return '<th' + title + '>' + escapeHtml(c.label) + ' <span class="chip src" id="note-scope">Shared</span></th>';
+      if (c.sortable === false) return '<th' + title + '>' + escapeHtml(c.label) + '</th>';
+      return '<th data-key="' + escapeHtml(c.key) + '"' + title + '><button>' + escapeHtml(c.label) + ' <span class="arrow">▾</span></button></th>';
+    }).join("");
+    var updated = RUN_DATE ? (CONFIG.subtitle ? " &middot; " : "") + 'updated <b>' + escapeHtml(RUN_DATE) + '</b>' : "";
+    var searchBox = SEARCH.keys.length ? '<label class="search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5.2" stroke="currentColor" stroke-width="1.4"/><path d="M11 11L14.2 14.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>'
+      + '<input id="q" type="text" placeholder="' + escapeHtml(SEARCH.placeholder) + '" aria-label="' + escapeHtml(SEARCH.placeholder) + '"></label>' : "";
+
+    document.title = CONFIG.title;
+    document.body.insertAdjacentHTML("beforeend", ''
+      + '<div class="wrap"><header class="page"><div><h1>' + escapeHtml(CONFIG.title) + '</h1>'
+      + '<p class="sub">' + escapeHtml(CONFIG.subtitle || "") + updated + '</p></div>'
+      + '<div class="stats">' + stats + '</div></header>'
+      + criteria
+      + (CONFIG.links && CONFIG.links.length ? '<div class="links"><span>' + escapeHtml(CONFIG.linksTitle || "Links") + '</span>' + CONFIG.links.map(function (l) {
+        return '<a href="' + escapeHtml(safeUrl(l.url)) + '" target="_blank" rel="noopener">' + escapeHtml(l.label) + '</a>';
+      }).join("") + '</div>' : "")
+      + '<div class="toolbar">' + searchBox + filters + toggles + '</div>'
+      + '<div class="table-card"><div class="table-scroll"><table><thead><tr><th class="fav-col"></th>' + heads + '<th></th></tr></thead><tbody id="rows"></tbody></table></div>'
+      + '<div class="empty" id="empty" hidden>' + escapeHtml(CONFIG.empty || "No items match those filters.") + '</div></div>'
+      + (CONFIG.footer ? '<footer>' + escapeHtml(CONFIG.footer) + '</footer>' : "")
+      + '</div><div class="banner" id="banner" role="status" aria-live="polite"></div>');
+  }
+  buildBody();
+
+  var rowsEl = document.getElementById("rows");
+  var emptyEl = document.getElementById("empty");
+  var bannerEl = document.getElementById("banner");
+  var qEl = document.getElementById("q");
+  var scrollEl = document.querySelector(".table-scroll");
+  var filterEls = FILTERS.map(function (f, i) {
+    var el = document.getElementById("filter-" + i);
+    if (f.style === "buttons") {
+      el.value = "";
+      el.addEventListener("click", function (e) {
+        var btn = e.target.closest(".filter-btn");
+        if (!btn) return;
+        setButtonValue(el, btn.dataset.value);
+        el.dispatchEvent(new Event("input"));
+      });
+    }
+    return el;
+  });
+  function setButtonValue(el, value) {
+    el.value = value;
+    el.querySelectorAll(".filter-btn").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.value === value));
+    });
+  }
+  var toggleEls = TOGGLES.map(function (t, i) { return document.getElementById("toggle-" + i); });
+
+  function loadStore(key) {
+    try { return JSON.parse(localStorage.getItem(key) || "{}"); }
+    catch (e) { return {}; }
+  }
+  function saveStore(key, obj) {
+    try { localStorage.setItem(key, JSON.stringify(obj)); }
+    catch (e) { /* private browsing / storage blocked */ }
+  }
+
+  // Opened links are private per browser. The browser's own :visited is
+  // unreliable inside the artifact's sandboxed frame.
+  var VISITED_STORE_KEY = CONFIG.id + "-visited";
+  var visitedMap = loadStore(VISITED_STORE_KEY);
+  function isSeen(link) { return !!visitedMap[link]; }
+  function markVisited(a) {
+    visitedMap[a.dataset.link] = true;
+    saveStore(VISITED_STORE_KEY, visitedMap);
+    a.classList.add("is-visited");
+  }
+
+  // One document per item in the "items" collection —
+  // {link, favorite, removed, note, tracked}. An item with nothing set has no
+  // document.
+  var COLL = "items";
+  var LOCAL_STORE_KEY = CONFIG.id + "-state";
+  var removedSet = new Set();
+  var favSet = new Set();
+  var notesMap = {};
+  var trackedMap = {};
+  var db = null;
+  var dbState = "connecting"; // "connecting" | "on" | "local"
+  var writeBlocked = false;
+  var bannerTimer = null;
+
+  function showBanner(msg) {
+    bannerEl.textContent = msg;
+    bannerEl.classList.add("show");
+    clearTimeout(bannerTimer);
+    bannerTimer = setTimeout(function () { bannerEl.classList.remove("show"); }, 4000);
+  }
+
+  function docId(link) {
+    return link.replace(/^https?:\/\//, "").replace(/[^A-Za-z0-9_.~:@+-]/g, "_").slice(0, 200);
+  }
+  function stateOf(link) {
+    return {
+      link: link,
+      favorite: favSet.has(link),
+      removed: removedSet.has(link),
+      note: notesMap[link] || "",
+      tracked: trackedMap[link] || "",
+    };
+  }
+  function isEmptyState(s) { return !s.favorite && !s.removed && !s.note && !s.tracked; }
+
+  // Re-rendering rebuilds every row, which would drop the caret of a note
+  // being typed — so while a row input has focus, a remote update waits
+  // until focus leaves it.
+  var pendingRender = false;
+  function rowInputFocused() {
+    var a = document.activeElement;
+    return !!(a && rowsEl.contains(a) && (a.tagName === "TEXTAREA" || a.tagName === "INPUT"));
+  }
+  function renderSoon() {
+    if (rowInputFocused()) { pendingRender = true; return; }
+    pendingRender = false;
+    render();
+  }
+
+  var dirtyNotes = {};
+  function applyStates(states) {
+    var fav = new Set(), rem = new Set(), notes = {}, tracked = {};
+    states.forEach(function (b) {
+      if (!b || typeof b.link !== "string") return;
+      if (b.favorite === true) fav.add(b.link);
+      if (b.removed === true) rem.add(b.link);
+      if (typeof b.note === "string" && b.note) notes[b.link] = b.note;
+      if (typeof b.tracked === "string" && b.tracked) tracked[b.link] = b.tracked;
+    });
+    // Keep notes typed here but not saved yet.
+    Object.keys(dirtyNotes).forEach(function (l) {
+      if (notesMap[l]) notes[l] = notesMap[l]; else delete notes[l];
+    });
+    favSet = fav; removedSet = rem; notesMap = notes; trackedMap = tracked;
+    renderSoon();
+  }
+
+  function useLocalState() {
+    dbState = "local";
+    var scope = document.getElementById("note-scope");
+    if (scope) scope.textContent = "This browser";
+    var saved = loadStore(LOCAL_STORE_KEY);
+    applyStates(Object.keys(saved).map(function (k) { return saved[k]; }));
+  }
+
+  async function initDb() {
+    try { db = window.claude ? await window.claude.use("db") : null; }
+    catch (e) { db = null; }
+    if (!db) { useLocalState(); return; }
+    try {
+      var user = await window.claude.use("user");
+      if (user && (await user.can("data.write")) === false) writeBlocked = true;
+    } catch (e) { /* not told: keep the controls, a refused write decides */ }
+    db.collection(COLL).onSnapshot(function (snap) {
+      dbState = "on";
+      applyStates(snap.docs.map(function (doc) { return doc.data(); }));
+    }, function () {
+      showBanner("Lost the connection to shared data — reload the page.");
+    });
+  }
+
+  // One write at a time per item document; each write sends the latest local
+  // state of that item, or deletes the document when it's empty.
+  var writeChains = {};
+  function persist(link) {
+    if (dbState === "local") {
+      var saved = loadStore(LOCAL_STORE_KEY);
+      var local = stateOf(link);
+      if (isEmptyState(local)) delete saved[link]; else saved[link] = local;
+      saveStore(LOCAL_STORE_KEY, saved);
+      return Promise.resolve();
+    }
+    var next = (writeChains[link] || Promise.resolve()).then(function () {
+      var s = stateOf(link);
+      var ref = db.collection(COLL).doc(docId(link));
+      if (isEmptyState(s)) return ref.delete();
+      return ref.set(s);
+    });
+    writeChains[link] = next.catch(function () {});
+    return next;
+  }
+
+  // Applies `mutate` optimistically, then saves the item's state.
+  // `revert` undoes the local change if the save is refused.
+  async function commitState(link, mutate, revert, shouldRender) {
+    if (shouldRender === undefined) shouldRender = true;
+    if (dbState === "connecting") {
+      showBanner("Still connecting to shared data — try again in a moment.");
+      return;
+    }
+    if (writeBlocked) {
+      showBanner("This is a read-only view — your access can't change shared data.");
+      return;
+    }
+    mutate();
+    if (shouldRender) render();
+    try {
+      try { await persist(link); }
+      catch (err) {
+        if (!err || err.code !== "unavailable") throw err;
+        await new Promise(function (r) { setTimeout(r, 500 + Math.random() * 1000); });
+        await persist(link);
+      }
+    } catch (err) {
+      var code = err && err.code;
+      revert();
+      if (code === "invalid_argument" || code === "not_granted" || code === "revoked" || code === "capability_disabled" || code === "capability_removed") {
+        writeBlocked = true;
+        showBanner("This is a read-only view — your access can't change shared data.");
+      } else {
+        showBanner("Couldn't save that change — try again.");
+      }
+      if (shouldRender) render();
+    }
+  }
+
+  function toggleSet(set, link) {
+    var had = set.has(link);
+    commitState(link,
+      function () { had ? set.delete(link) : set.add(link); },
+      function () { had ? set.add(link) : set.delete(link); }
+    );
+  }
+
+  // Notes save after a pause in typing and when the textarea loses focus.
+  var noteTimers = {};
+  function markNoteDirty(link) {
+    dirtyNotes[link] = true;
+    clearTimeout(noteTimers[link]);
+    noteTimers[link] = setTimeout(function () { flushNoteSave(link); }, 1200);
+  }
+  function flushNoteSave(link) {
+    clearTimeout(noteTimers[link]);
+    if (!dirtyNotes[link]) return;
+    delete dirtyNotes[link];
+    commitState(link,
+      function () { if (!notesMap[link]) delete notesMap[link]; },
+      function () { /* keep the viewer's typed text on screen even if the save failed */ },
+      false
+    );
+  }
+
+  function todayStr() {
+    var t = new Date();
+    return t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0") + "-" + String(t.getDate()).padStart(2, "0");
+  }
+  function setTracked(link, value) {
+    var prev = trackedMap[link];
+    commitState(link,
+      function () { if (value) trackedMap[link] = value; else delete trackedMap[link]; },
+      function () { if (prev) trackedMap[link] = prev; else delete trackedMap[link]; }
+    );
+  }
+
+  function statusOf(d) {
+    if (d.status && STATUSES[d.status]) return { key: d.status, date: d.status_date || "", note: d.status_note || "", url: d.status_url || "" };
+    if (trackedMap[d.link] && STATUSES[CONFIG.whenTracked]) return { key: CONFIG.whenTracked, date: trackedMap[d.link], note: "", url: "" };
+    return null;
+  }
+  function statusIndex(key) { return Object.keys(STATUSES).indexOf(key); }
+  function statusCell(d) {
+    var st = statusOf(d);
+    if (!st) return "";
+    var meta = STATUSES[st.key];
+    var chip = '<span class="st-chip tone-' + escapeHtml(meta.tone || "info") + '" title="' + escapeHtml(meta.help || "") + '">' + escapeHtml(meta.label) + '</span>';
+    var date = st.date ? '<span class="st-date">' + escapeHtml(String(st.date).slice(5).replace("-", "/")) + '</span>' : "";
+    var note = st.note ? '<span class="st-note">' + escapeHtml(st.note) + '</span>' : "";
+    var url = safeUrl(st.url);
+    var mail = url ? '<a class="st-mail" href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' + escapeHtml(CONFIG.statusLinkLabel || "Open ↗") + '</a>' : "";
+    return chip + date + note + mail;
+  }
+
+  function trackedCell(d, column) {
+    var date = trackedMap[d.link];
+    var link = escapeHtml(d.link);
+    var name = escapeHtml(itemName(d));
+    var label = escapeHtml(column.label);
+    if (!date) return '<button class="enq-btn" data-link="' + link + '" aria-label="Set ' + label + ' to today for ' + name + '">+ Today</button>';
+    return '<span class="enq-cell"><input type="date" class="enq-input" data-link="' + link + '" value="' + escapeHtml(date) + '" aria-label="' + label + ' date for ' + name + '">'
+      + '<button class="enq-clear" data-link="' + link + '" aria-label="Clear ' + label + ' date for ' + name + '" title="Clear">✕</button></span>';
+  }
+
+  function numberText(v, c) {
+    if (isBlank(v)) return "—";
+    if (Number(v) === 0 && c.zeroLabel) return escapeHtml(c.zeroLabel);
+    var n = typeof v === "number" ? v : Number(v);
+    var shown = c.type === "money" && Number.isFinite(n) ? n.toLocaleString("en-GB") : String(v);
+    return escapeHtml((c.prefix || "") + shown + (c.unit || ""));
+  }
+
+  function cell(d, c) {
+    var v = d[c.key];
+    switch (c.type) {
+      case "link":
+        var href = safeUrl(d.link);
+        var text = escapeHtml(itemName(d));
+        var newChip = isNew(d) ? '<span class="chip new">New</span> ' : "";
+        return '<td class="addr">' + newChip + (href
+          ? '<a href="' + escapeHtml(href) + '" data-link="' + escapeHtml(d.link) + '"' + (visitedMap[d.link] ? ' class="is-visited"' : '') + ' target="_blank" rel="noopener">' + text + '</a>'
+          : text) + '</td>';
+      case "number":
+        return '<td class="num">' + numberText(v, c) + '</td>';
+      case "money":
+        return '<td class="num price">' + numberText(v, c) + '</td>';
+      case "status":
+        return '<td class="st-cell">' + statusCell(d) + '</td>';
+      case "tracked":
+        return '<td>' + trackedCell(d, c) + '</td>';
+      case "note":
+        return '<td><textarea class="note-input" rows="2" data-link="' + escapeHtml(d.link) + '" placeholder="Add a note…" aria-label="Note on ' + escapeHtml(itemName(d)) + '">' + escapeHtml(notesMap[d.link] || "") + '</textarea></td>';
+      default:
+        return '<td' + (c.wide ? ' class="wide"' : "") + '>' + (isBlank(v) ? "—" : escapeHtml(v)) + '</td>';
+    }
+  }
+
+  var sortKey = CONFIG.defaultSort ? CONFIG.defaultSort.key : "";
+  var sortDir = CONFIG.defaultSort && CONFIG.defaultSort.dir === -1 ? -1 : 1;
+
+  // Items without a value sort last in both directions.
+  function sortValue(d, c) {
+    if (c.type === "status") { var st = statusOf(d); return st ? statusIndex(st.key) : null; }
+    if (c.type === "tracked") return trackedMap[d.link] || null;
+    if (c.type === "number" || c.type === "money") return num(d[c.key]);
+    return isBlank(d[c.key]) ? null : String(d[c.key]);
+  }
+  function applySort(list) {
+    var column = COLUMNS.filter(function (c) { return c.key === sortKey; })[0];
+    if (!column) return list;
+    return list.slice().sort(function (a, b) {
+      var av = sortValue(a, column), bv = sortValue(b, column);
+      if (av === null || bv === null) return av === bv ? 0 : (av === null ? 1 : -1);
+      if (typeof av === "string") return av.localeCompare(bv, undefined, { numeric: true }) * sortDir;
+      return (av - bv) * sortDir;
+    });
+  }
+
+  function toggleMatches(t, d) {
+    switch (t.type) {
+      case "new": return isNew(d);
+      case "hideSeen": return !isSeen(d.link);
+      case "favorites": return favSet.has(d.link);
+      case "tracked": return !!trackedMap[d.link];
+      case "status": var st = statusOf(d); return !!st && st.key === t.status;
+      default: return true;
+    }
+  }
+
+  function statValue(s) {
+    function count(fn) { return ITEMS.filter(fn).length; }
+    switch (s.value) {
+      case "new": return count(isNew);
+      case "unseen": return count(function (d) { return !isSeen(d.link); });
+      case "removed": return count(function (d) { return removedSet.has(d.link); });
+      case "favorites": return count(function (d) { return favSet.has(d.link); });
+      case "status": return count(function (d) { var st = statusOf(d); return !!st && st.key === s.status; });
+      case "median":
+        var values = ITEMS.map(function (d) { return num(d[s.key]); }).filter(function (n) { return n !== null; }).sort(function (a, b) { return a - b; });
+        if (!values.length) return "—";
+        return (s.prefix || "") + values[Math.floor(values.length / 2)].toLocaleString("en-GB") + (s.unit || "");
+      default: return ITEMS.length;
+    }
+  }
+
+  function render() {
+    var q = qEl ? qEl.value.trim().toLowerCase() : "";
+    var showRemoved = TOGGLES.some(function (t, i) { return t.type === "showRemoved" && toggleEls[i].checked; });
+
+    var filtered = ITEMS.filter(function (d) {
+      if (!showRemoved && removedSet.has(d.link)) return false;
+      if (q && !SEARCH.keys.some(function (k) { return !isBlank(d[k]) && String(d[k]).toLowerCase().indexOf(q) !== -1; })) return false;
+      if (!FILTERS.every(function (f, i) { return !filterEls[i].value || String(d[f.key]) === filterEls[i].value; })) return false;
+      return TOGGLES.every(function (t, i) { return !toggleEls[i].checked || toggleMatches(t, d); });
+    });
+    filtered = applySort(filtered);
+
+    STATS.forEach(function (s, i) { document.getElementById("stat-" + i).textContent = statValue(s); });
+
+    rowsEl.innerHTML = "";
+    emptyEl.hidden = filtered.length > 0;
+
+    filtered.forEach(function (d) {
+      var removed = removedSet.has(d.link);
+      var fav = favSet.has(d.link);
+      var link = escapeHtml(d.link);
+      var name = escapeHtml(itemName(d));
+      var tr = document.createElement("tr");
+      var classes = [];
+      if (isNew(d)) classes.push("is-new");
+      if (removed) classes.push("is-removed");
+      tr.className = classes.join(" ");
+      var removeCell = removed
+        ? '<button class="remove-btn is-restore" data-link="' + link + '" aria-label="Restore ' + name + '">Restore</button>'
+        : '<button class="remove-btn" data-link="' + link + '" aria-label="Remove ' + name + '" title="Remove">✕</button>';
+      tr.innerHTML = '<td><button class="fav-btn' + (fav ? " is-fav" : "") + '" data-link="' + link + '" aria-label="' + (fav ? "Unfavorite" : "Favorite") + ' ' + name + '" aria-pressed="' + fav + '" title="Favorite">' + (fav ? "★" : "☆") + '</button></td>'
+        + COLUMNS.map(function (c) { return cell(d, c); }).join("")
+        + '<td>' + removeCell + '</td>';
+      rowsEl.appendChild(tr);
+    });
+  }
+
+  rowsEl.addEventListener("change", function (e) {
+    if (e.target.classList.contains("enq-input")) setTracked(e.target.dataset.link, e.target.value);
+  });
+  rowsEl.addEventListener("input", function (e) {
+    if (e.target.classList.contains("note-input")) {
+      notesMap[e.target.dataset.link] = e.target.value;
+      markNoteDirty(e.target.dataset.link);
+    }
+  });
+  rowsEl.addEventListener("focusout", function (e) {
+    if (e.target.classList.contains("note-input")) flushNoteSave(e.target.dataset.link);
+    if (pendingRender) setTimeout(renderSoon, 0);
+  });
+  rowsEl.addEventListener("auxclick", function (e) {
+    var link = e.target.closest(".addr a");
+    if (link && e.button === 1) { markVisited(link); setTimeout(render, 0); }
+  });
+  rowsEl.addEventListener("click", function (e) {
+    var link = e.target.closest(".addr a");
+    if (link) { markVisited(link); setTimeout(render, 0); return; }
+    var btn = e.target.closest("button");
+    if (!btn) return;
+    if (btn.classList.contains("enq-btn")) setTracked(btn.dataset.link, todayStr());
+    else if (btn.classList.contains("enq-clear")) setTracked(btn.dataset.link, "");
+    else if (btn.classList.contains("remove-btn")) toggleSet(removedSet, btn.dataset.link);
+    else if (btn.classList.contains("fav-btn")) toggleSet(favSet, btn.dataset.link);
+  });
+
+  function markSorted(th) {
+    document.querySelectorAll("thead th").forEach(function (h) { h.classList.remove("sorted"); });
+    th.classList.add("sorted");
+    th.querySelector(".arrow").textContent = sortDir === 1 ? "▾" : "▴";
+  }
+  document.querySelectorAll("thead th[data-key]").forEach(function (th) {
+    th.querySelector("button").addEventListener("click", function () {
+      if (sortKey === th.dataset.key) sortDir *= -1; else { sortKey = th.dataset.key; sortDir = 1; }
+      markSorted(th);
+      render();
+      saveViewState();
+    });
+  });
+
+  [qEl].concat(filterEls, toggleEls).forEach(function (el) {
+    if (el) el.addEventListener("input", function () { render(); saveViewState(); });
+  });
+
+  // Filters, sort and scroll position are kept per browser and put back on boot.
+  var VIEW_STORE_KEY = CONFIG.id + "-view";
+  function saveViewState() {
+    var toggles = {}, filters = {};
+    TOGGLES.forEach(function (t, i) { toggles[toggleId(t)] = toggleEls[i].checked; });
+    FILTERS.forEach(function (f, i) { filters[f.key] = filterEls[i].value; });
+    saveStore(VIEW_STORE_KEY, {
+      q: qEl ? qEl.value : "", toggles: toggles, filters: filters,
+      sortKey: sortKey, sortDir: sortDir,
+      scrollY: window.scrollY, scrollX: scrollEl.scrollLeft,
+    });
+  }
+  function findSortHeader(key) {
+    return Array.prototype.filter.call(document.querySelectorAll("thead th[data-key]"), function (h) { return h.dataset.key === key; })[0];
+  }
+  function restoreViewState() {
+    var v = loadStore(VIEW_STORE_KEY);
+    if (qEl && typeof v.q === "string") qEl.value = v.q;
+    TOGGLES.forEach(function (t, i) { toggleEls[i].checked = !!(v.toggles && v.toggles[toggleId(t)]); });
+    FILTERS.forEach(function (f, i) {
+      var value = v.filters && v.filters[f.key];
+      // A saved option may no longer exist after the data changes.
+      if (typeof value !== "string") return;
+      if (f.style === "buttons") {
+        if (Array.prototype.some.call(filterEls[i].querySelectorAll(".filter-btn"), function (b) { return b.dataset.value === value; })) setButtonValue(filterEls[i], value);
+      } else if (Array.prototype.some.call(filterEls[i].options, function (o) { return o.value === value; })) filterEls[i].value = value;
+    });
+    if (v.sortKey && findSortHeader(v.sortKey)) {
+      sortKey = v.sortKey;
+      sortDir = v.sortDir === -1 ? -1 : 1;
+    }
+    var th = findSortHeader(sortKey);
+    if (th) markSorted(th);
+    return v;
+  }
+  var scrollTimer = null;
+  function saveViewStateSoon() {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(saveViewState, 200);
+  }
+  window.addEventListener("scroll", saveViewStateSoon, { passive: true });
+  scrollEl.addEventListener("scroll", saveViewStateSoon, { passive: true });
+  window.addEventListener("pagehide", saveViewState);
+
+  var restored = restoreViewState();
+  render();
+  if (restored.scrollY || restored.scrollX) {
+    requestAnimationFrame(function () {
+      window.scrollTo(0, restored.scrollY || 0);
+      scrollEl.scrollLeft = restored.scrollX || 0;
+    });
+  }
+  initDb();
+})();
+</script>
+</body>
+</html>
